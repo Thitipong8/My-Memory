@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My-Memory❤️</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Prompt:wght@400;600&display=swap"
+        rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Prompt', sans-serif;
+            overflow: hidden;
+            background: linear-gradient(135deg, #c9184a, #ff4d6d, #ff8fa3);
+            color: #fff;
+        }
+
+        /* ===== หน้า ===== */
+        .page {
+            display: none;
+            height: 100vh;
+            padding: 40px 20px 160px;
+            text-align: center;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        /* กรอบรูป */
+        .memory-frame {
+            position: absolute;
+            width: 120px;
+            height: 170px;
+            background: white;
+            padding: 6px 6px 18px 6px;
+            border-radius: 10px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, .35);
+            overflow: hidden;
+            z-index: 2;
+            animation: floatPaper 2s ease-in-out infinite alternate;
+        }
+
+        /* ===== ปุ่มนำทางทุกหน้า ===== */
+        .nav-buttons {
+            position: fixed;
+            bottom: 65px;
+            left: 0;
+            right: 0;
+            width: 100%;
+            max-width: 100vw;
+            padding: 0 16px;
+            gap: 10px;
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        .nav-buttons .btn {
+            pointer-events: auto;
+            margin-top: 0;
+            padding: 12px 16px;
+            font-size: 15px;
+            white-space: nowrap;
+            max-width: 48%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        @keyframes floatPaper {
+            from {
+                transform: translateY(0) rotate(var(--tilt));
+            }
+
+            to {
+                transform: translateY(-35px) rotate(var(--tilt));
+            }
+        }
+
+        .memory-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        /* ==== 4 มุม ==== */
+
+        .top-left-frame {
+            top: 12vh;
+            left: 10vw;
+            --tilt: -12deg;
+            animation-duration: 5s;
+        }
+
+        .top-right-frame {
+            top: 12vh;
+            right: 10vw;
+            --tilt: 10deg;
+            animation-duration: 3.5s;
+        }
+
+        .bottom-left-frame {
+            bottom: 12vh;
+            left: 10vw;
+            --tilt: 8deg;
+            animation-duration: 6s;
+        }
+
+        .bottom-right-frame {
+            bottom: 12vh;
+            right: 10vw;
+            --tilt: -8deg;
+            animation-duration: 4s;
+        }
+
+        .page:nth-child(6) .btn {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+        }
+
+        .center-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 85%;
+            max-width: 340px;
+            background: rgba(0, 0, 0, .45);
+            padding: 22px;
+            border-radius: 18px;
+            z-index: 20;
+        }
+
+        /* ==== ปรับเพิ่มสำหรับจอเล็กมาก ==== */
+        @media (max-width: 380px) {
+            .center-message {
+                width: 88%;
+                padding: 18px;
+            }
+        }
+
+        .page.active {
+            display: block;
+            animation: fadeIn .6s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== หัวข้อ ===== */
+        h1 {
+            font-family: 'Great Vibes', cursive;
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            margin-bottom: 20px;
+        }
+
+        /* ===== กล่องพื้นหลังข้อความ ===== */
+        .content-box {
+            background: rgba(0, 0, 0, .35);
+            padding: 25px;
+            border-radius: 20px;
+            max-width: 750px;
+            margin: auto;
+        }
+
+        /* ===== ปุ่ม ===== */
+        .btn {
+            margin-top: 25px;
+            padding: 14px 28px;
+            font-size: 18px;
+            border: none;
+            border-radius: 40px;
+            background: white;
+            color: #c9184a;
+            cursor: pointer;
+            transition: .3s;
+        }
+
+        .btn:hover {
+            transform: scale(1.08);
+            background: #c9184a;
+            color: white;
+        }
+
+        /* ===== รูป ===== */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .gallery img {
+            width: 100%;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, .4);
+        }
+
+        /* ===== หัวใจลอย ===== */
+        .heart {
+            position: fixed;
+            bottom: -20px;
+            color: #ffccd5;
+            animation: float 6s linear forwards;
+        }
+
+        /* รูปโพราลอยด์ */
+        .polaroid {
+            position: absolute;
+            width: 100px;
+            height: 150px;
+            background: white;
+            padding: 10px 10px 25px 10px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, .4);
+            overflow: hidden;
+        }
+
+        .polaroid img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        .polaroid span {
+            font-size: 10px;
+            color: #c9184a;
+            display: block;
+            margin-top: 6px;
+        }
+
+        /* รูปตรงกลางหน้า 2, 3, 4, 5 */
+        .center-polaroid {
+            display: block;
+            position: static;
+            left: auto;
+            right: auto;
+            top: auto;
+            width: 165px;
+            height: 215px;
+            background: white;
+            padding: 10px 10px 24px 10px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, .4);
+            overflow: hidden;
+            margin: 22px auto 0;
+            transform: none;
+            transition: .3s;
+        }
+
+        .center-polaroid img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        .center-polaroid:hover {
+            transform: scale(1.05);
+        }
+
+        /* เอียงซ้าย */
+        .left-tilt {
+            position: absolute;
+            left: 4vw;
+            top: 30vh;
+            transform: rotate(-8deg);
+        }
+
+        /* เอียงขวา */
+        .right-tilt {
+            position: absolute;
+            right: 4vw;
+            top: 38vh;
+            transform: rotate(8deg);
+        }
+
+
+
+        .left-tilt2 {
+            position: absolute;
+            left: 10vw;
+            top: 52vh;
+            transform: rotate(-8deg);
+        }
+
+        .right-tilt2 {
+            position: absolute;
+            right: 10vw;
+            top: 56vh;
+            transform: rotate(8deg);
+        }
+
+        /* ขยับตอน hover */
+        .polaroid:hover {
+            transform: rotate(0deg) scale(1.08);
+        }
+
+        @media (max-width:480px) {
+            .page {
+                padding-bottom: 180px;
+            }
+
+            .polaroid {
+                width: 36vw;
+                max-width: 190px;
+                height: 230px;
+                min-width: 90px;
+            }
+
+            .center-polaroid {
+                position: static !important;
+                left: auto !important;
+                right: auto !important;
+                top: auto !important;
+                width: 250px !important;
+                height: 300px !important;
+                margin: 18px auto 0 !important;
+                padding: 8px 8px 20px 8px !important;
+                transform: none !important;
+            }
+
+            .center-polaroid:hover {
+                transform: scale(1.05) !important;
+            }
+
+            .left-tilt {
+                top: 60vh;
+            }
+
+            .left-tilt2 {
+                top: 66vh;
+                left: 8vw;
+                transform: rotate(-8deg);
+            }
+
+            .right-tilt {
+                top: 55vh;
+            }
+
+            .right-tilt2 {
+                top: 63vh;
+                right: 8vw;
+                transform: rotate(8deg);
+            }
+
+            .nav-buttons {
+                bottom: 15px;
+                padding: 0 12px;
+                gap: 8px;
+            }
+
+            .nav-buttons .btn {
+                font-size: 13.5px;
+                padding: 10px 12px;
+                max-width: 48%;
+            }
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) scale(1) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-110vh) scale(1.6) rotate(var(--rotate));
+                opacity: 0;
+            }
+        }
+
+        .full-center-page {
+            display: flex;
+            flex-direction: column;
+            margin-top: 20px;
+            align-items: center;
+            text-align: center;
+        }
+
+        .top-text {
+            margin-bottom: 30px;
+            font-size: 40px;
+        }
+
+        .center-image {
+            width: 500px;
+            height: 300px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- PAGE 1 -->
+    <div class="page active">
+        <h1>💗My-Memory💗</h1>
+
+        <div class="content-box">
+            เรารู้จักกันวันไหนน้าาา? 🌹💭
+            <br><br>
+
+            <input type="text" id="passwordInput" placeholder="พิมพ์คำตอบ เช่น 13/03/2033💕" autocomplete="off" style="
+                width:90%;
+                max-width:300px;
+                padding:14px;
+                font-size:16px;
+                border-radius:30px;
+                border:none;
+                text-align:center;
+                outline:none;
+            ">
+
+            <br><br>
+
+            <!-- ปุ่มยืนยัน -->
+            <button class="btn" id="confirmBtn" onclick="checkPassword()">
+                ยืนยัน 💖
+            </button>
+
+            <p id="errorText" style="margin-top:10px;color:#ffd6e0;"></p>
+        </div>
+
+        <div class="polaroid left-tilt">
+            <img src="image/หมาคาบ-removebg-preview.png">
+        </div>
+
+        <div class="polaroid right-tilt">
+            <img src="image/หมาคาบ2-removebg-preview.png">
+        </div>
+    </div>
+
+
+    <!-- PAGE 2 -->
+    <div class="page">
+        <h1>For Cake🧁💖</h1>
+
+        <div class="content-box">
+            จำดะม้ายยย เราไปกินข้าวด้วยกันครั้งแรกที่หนาย❤️<br><br>
+            เฉลย!! ร้านชาบูเสียบไม้งายยย🍜<br>
+            นั่งข้างหน้าร้านเลออ🥣<br><br>
+            ตอนนั้นเหมือนจะเขินๆอยู่นิดๆ ก็ไม่นิดหรอก มากเลยแหละ แต่แช้มจำได้ว่าแช้มถามเค้กหลายอย่างม้ากก
+            และเค้กก็ดูนิ่งๆแบบว่าน่าจะงงๆมั้ง555✨
+            <br><br>
+            แต่เรื่องที่คุยแซ่บสุดน่าจะเรื่องไอ่อ๋อง คนที่นินทาเมื่อไหร่ก็ตลก5536546🌹<br><br>
+        </div>
+
+        <div class="center-polaroid">
+            <img src="image/S__24076307_0.jpg">
+        </div>
+    </div>
+
+
+    <!-- PAGE 3 -->
+    <div class="page">
+        <h1>For Cake🧁💖</h1>
+
+        <div class="content-box">
+            กินคาวเสร็จแล้วต้องทำงายยย💕<br>
+            ก็ต้องกินหวานนนน🍨<br><br>
+            จำได้ม้ะว่าสั่งอะไร แช้มก็ลืมไปละ55555 จำได้แต่มีอย่างนึงอะที่ใส่ในบิงซูแล้วไม่เข้า!!
+            น่าจะเฉาก๊วยหรืออะไรสักอย่างแถมกลิ่นแปลกๆอีก นินทาของกินเขาในขณะที่แม่ค้าอยู่ระยะเผาขน5555
+            แถมใครไม่รู้เปิดเพลงหมอรำอีก!! จาบ้าาา แทบลุกขึ้นฟ้อน😵
+        </div>
+
+        <div class="center-polaroid">
+            <img src="image/S__24076308_0.jpg">
+        </div>
+    </div>
+
+
+    <!-- PAGE 4 -->
+    <div class="page">
+        <h1>For Cake🧁💖</h1>
+
+        <div class="content-box">
+            เน้ๆๆๆ รูปนี้สวยม้ากกกแช้มชอบมาก💝<br>
+            ถ้าจำไม่ผิดหมูเด้งน่าจะบอกว่าอยากกินอะไรหวานๆ🍩<br><br>
+            แช้มก็เลยแนะนำร้านนี้ในเมืองสรุป เค้กเคยมาแล้ว...😌<br>
+            แถมเปิดรูปโชว์เป็นหลักฐานด้วยว่ามาจริง!! แต่ให้อภัยเพราะขนมอาหย่อยแต่เกือบกินไม่หมด
+            เกี่ยงกันไปกันมา555235115<br>
+            แต่แช้มได้กินคำสุดท้าย เพราะคนที่ได้กินคำสุดท้ายจะได้แฟนหน้าตาดี🤪
+        </div>
+
+        <div class="center-polaroid">
+            <img src="image/S__24076309_0.jpg">
+        </div>
+    </div>
+
+
+    <!-- PAGE 5 -->
+    <div class="page">
+        <h1>For Cake🧁💖</h1>
+
+        <div class="content-box">
+            วันนี้แช้มน่าจะบอกว่าอยากกินอาหารอีสานแซ่บๆ💕<br>
+            เค้กก้ตามใจ ไปกินเป็นเพื่อนดั้ว🍨<br>
+            แต่สั่งกระเพรามากินคนเดียว...🙂<br><br>
+            แต่อย่าให้รู้วน้าาา ว่าใครมันจ้วงปลาร้าไม่พักเลยอะ แถมตักไปราดข้าวเลยด้วยยย!! อย่าให้รู้นะว่าใครรร
+            กระเพราไก่ส้มตำอะไรใหม่ๆเวอร์<br>
+            แต่แช้มชอบนะอร่อยมากเลยร้านนี้ ไว้มีโอกาสเด่วไปกันอีกนะ😋❣
+        </div>
+
+        <div class="center-polaroid">
+            <img src="image/S__24076310_0.jpg">
+        </div>
+    </div>
+
+    <!-- PAGE 6 -->
+    <div class="page">
+        <h1>For Cake🧁💖</h1>
+
+        <div class="content-box">
+            วันนี้หมูเด้งมันอยากกินไอติมตอน1ทุ่ม!!💕<br>
+            คติแช้มคืออะรายยย "แช้มหาให้ได้ทู้กอย่าง"🍦<br><br>
+            ก้เลยถามว่ากิน Mixueมั้ย เค้กบอกว่า "ได่"<br>
+            แต่ประเด็นมันอยู่ที่วันนั้นฝนดันลงเม็ดอีก หนาวก็หนาว🥶<br>
+            แต่ก้ดันชวนกันมากินไอติมเนาะ แปลกคนกันจริงๆไม่มีใครห้ามใคร😑💘
+        </div>
+
+        <div class="center-polaroid">
+            <img src="image/S__24076311_0.jpg">
+        </div>
+    </div>
+
+    <!-- PAGE 7 -->
+    <div class="page">
+        <h1>For Cake🧁💖</h1>
+
+        <div class="content-box">
+            นี่ๆๆๆ ช่วงนี้เพิลฟิตเพิลวิ่งทู้กวันน💞🏃🏻‍♀️<br>
+            ไปวิ่งด้วยกันครั้งแรกก็ไปสะไกลเลยย<br>
+            "ห้วยกระแทก"<br><br>
+            วิ่งไวสะดั้วน้าาา ไม่ใช่ช้าๆเด้อออ แช้มชอบนะเค้กออกกำลังกายดูแลตัวเองอะ
+            พาหมูที่มันอยู่แต่ในห้องออกไปเปิดหูเปิดตา สนุกมากวิ่งกันจนมืดจนค่ำ
+            ไว้ว่างๆเด่วไปนั่งเล่นตรงลานปูนเอียงๆตรงนั้นกันอีกนะ❤🔥🏃🏻‍♀️🏃🏻‍♂️
+        </div>
+
+        <div class="polaroid left-tilt">
+            <img src="image/S__24076312_0.jpg">
+        </div>
+
+        <div class="polaroid right-tilt">
+            <img src="image/S__24076313_0.jpg">
+        </div>
+    </div>
+
+    <!-- PAGE 8 -->
+    <div class="page">
+        <h1>For Cake🧁💖</h1>
+
+        <div class="content-box">
+            วิ่งเสร็จมาเหนื่อยๆแล้วทำไงง?💝<br>
+            หาของอีทอีกแล้วสิคั้บ อย่าไปรอ!!<br><br>
+            คุณหมูเขาอยากกินสุกกี้ แล้วก็แน่นอน!! ไม่มีอะไรที่แช้มหาให้ไม่ได้ จนหมูเค้กก็ได้กินสุกกี้สมใจเพิลเลยแหละ
+            ส่วนของแช้มแอบอ้วน ข้าวขาหมูเลยงะ😣💔
+        </div>
+
+        <div class="center-polaroid">
+            <img src="image/S__24076314_0.jpg">
+        </div>
+    </div>
+
+    <!-- PAGE 9 -->
+    <div class="page">
+
+        <!-- รูป 4 มุม -->
+        <div class="memory-frame corner-frame top-left-frame">
+            <img src="image/S__24076315_0.jpg">
+        </div>
+
+        <div class="memory-frame corner-frame top-right-frame">
+            <img src="image/S__24076316_0.jpg">
+        </div>
+
+        <div class="memory-frame corner-frame bottom-left-frame">
+            <img src="image/S__24076318_0.jpg">
+        </div>
+
+        <div class="memory-frame corner-frame bottom-right-frame">
+            <img src="image/S__24076319_0.jpg">
+        </div>
+
+        <!-- ข้อความกลาง -->
+        <div class="center-message">
+            <h2>วิ่งๆๆๆ ที่นี่ลพบุรี!!</h2>
+            <p>เป็นที่ที่ไปวิ่งด้วยกันบ่อยที่สุดแน้ววว</p>
+            <p>เรื่องนี้ไม่เคยบอกเลยนะ ว่าแช้มชอบเค้กตอนนั้นมากไม่รุ้จะอธิบายยังไงแต่ชอบอะ
+                ปกติกลับห้องมาก็จะหมกตัวทำงานในห้องคนเดียวแต่พอเค้กชวนไปวิ่ง แช้มไปแบบลืมงานเลออ5555
+                ชอบที่ได้วิ่งด้วยกันชอบตอนที่เรามานั่งคุยกันหลังวิ่งเสร้จด้วยย โรแมนติกเนอะะ
+                น่าคิดถึงโมเม้นตอนนั้นจิงจี้งงง💗</p>
+        </div>
+        <br>
+    </div>
+
+    <!-- PAGE 10 -->
+    <div class="page">
+        <h1>For Cake🧁💖</h1>
+
+        <div class="content-box">
+            อันนี้น่าร้ากกกก💝<br>
+            อยู่ๆเค้กก็เดินหายไป และก็กับมาพร้อมเชือกกะลูกปัด😍<br><br>
+            เขามีความแอบไปเลือกมาด้วยน้าา น่ารักนะแช้มชอบมากที่เค้กทำให้จะเก็บไว้เป็นอย่างดี!!
+            แต่แช้มให้เค้กคืนแล้วหน่าาาว่าไม่ได้เด้ออ ขอบคุณน้าาที่ทำให้น่ารักงะหมู😘💕
+        </div>
+
+        <div class="center-polaroid">
+            <img src="image/S__24076322_0.jpg">
+        </div>
+    </div>
+
+    <!-- PAGE 11 -->
+    <div class="page">
+
+        <!-- รูป 4 มุม -->
+        <div class="memory-frame corner-frame top-left-frame">
+            <img src="image/S__24076325_0.jpg">
+        </div>
+
+        <div class="memory-frame corner-frame top-right-frame">
+            <img src="image/S__24076326_0.jpg">
+        </div>
+
+        <div class="memory-frame corner-frame bottom-left-frame">
+            <img src="image/S__24076327_0.jpg">
+        </div>
+
+        <div class="memory-frame corner-frame bottom-right-frame">
+            <img src="image/S__24076329_0.jpg">
+        </div>
+
+        <!-- ข้อความกลาง -->
+        <div class="center-message">
+            <h2>รูปคู่รูปแรก!!</h2>
+            <p>เค้กบอกอยากไปคาเฟ่ก็เลยพามานี่ แต่หมูเค้กดันมากะเพื่อนก่อนสะแยะ</p>
+            <p>เป้นโมเม้นที่น่ารักจิงๆนะ แช้มชอบจิงๆตอนนั้นอะ ชอบนั่งคุยนั่งพุดนั่งถามแบบเรื่อยๆเปื่อยๆไม่ต้องจับโทสับอะ
+                แล้วเค้กก้คุยกะแช้มได้ทุกเรื่องเลยด้วยนะ น่าจะเป้นหนึ่งในวันที่ยิ้มกว้างที่สุดเลยแหละะะ💗🤟🏻</p>
+        </div>
+        <br>
+    </div>
+
+    <!-- PAGE 12 -->
+    <div class="page">
+
+        <!-- รูป 4 มุม -->
+        <div class="memory-frame corner-frame top-left-frame">
+            <img src="image/2202B2E8-03C4-4223-B03D-E0A738DD8BA8.jpg">
+        </div>
+
+        <div class="memory-frame corner-frame top-right-frame">
+            <img src="image/CD55B35C-B80A-411F-BE95-3538F821A15F.jpg">
+        </div>
+
+        <div class="memory-frame corner-frame bottom-left-frame">
+            <img src="image/E23B4F72-6800-4E31-86FE-F967454B8EF1.jpg">
+        </div>
+
+        <div class="memory-frame corner-frame bottom-right-frame">
+            <img src="image/S__24076381.jpg">
+        </div>
+
+        <!-- ข้อความกลาง -->
+        <div class="center-message">
+            <h2>เอาไปอีกชุด!!</h2>
+            <p>น่าร้ากกกกก แช้มชอบนะะะะ</p>
+            <p>เป็นโมเมนต์ที่น่ารักจิงๆนะ ชอบจิงๆนะเนี้ยยยไม่ได้ตั๋วววว💗🤟🏻</p>
+        </div>
+        <br>
+    </div>
+
+    <!-- PAGE 13 -->
+    <div class="page">
+        <h1>For Cake🧁💖</h1>
+
+        <div class="content-box">
+            เอาไปอีกๆๆๆๆ💞<br>
+            ไม่อยากเก็บไว้ดูคนเดววว<br>
+            รูปไหนอยากเซฟเค้กกดค้างแล้วเซฟไว้ได้เลยนะะะะ❣💨<br><br>
+        </div>
+
+        <div class="polaroid left-tilt">
+            <img src="image/S__24076331_0.jpg">
+        </div>
+
+        <div class="polaroid right-tilt">
+            <img src="image/S__24076333_0.jpg">
+        </div>
+    </div>
+
+    <!-- PAGE 14 -->
+    <div class="page">
+        <h1>For Cake🧁💖</h1>
+
+        <div class="content-box">
+            กลับมาฟิตกันหน่อยยย💕<br>
+            เด่วจะหาว่าพาแต่หาแนวอ้วนน!!<br>
+            ชอบจิงๆนั่นแหละช่วงนั้นอะ เป้นโมเมนต์ที่ดีมากๆ
+            แช้มแอบถ่ายตลอดนั่นแหละแต่ไม่ให้หมูมันรู้ตัว55566554🐽💖<br><br>
+        </div>
+
+        <div class="polaroid left-tilt">
+            <img src="image/S__24076334_0.jpg">
+        </div>
+
+        <div class="polaroid right-tilt">
+            <img src="image/S__24076336_0.jpg">
+        </div>
+    </div>
+
+    <!-- PAGE 15 -->
+    <div class="page">
+        <h1>For Cake🧁💖</h1>
+
+        <div class="content-box">
+            ชอบบบๆๆ I luv เลยยย💟<br><br>
+            ชอบอะ ชอบนั่งคุยนั่งถามไปเรื่อยเปื่อย มองนุ่นมองนี่ไปเรื่อยๆแต่มีเค้กนั่งข้างๆ
+            มันดูเหมือนน่าเบื่อเนาะ5555แต่แบบนี้แหละที่แช้มชอบ💘<br>
+        </div>
+
+        <div class="polaroid left-tilt">
+            <img src="image/S__24076338_0.jpg">
+        </div>
+
+        <div class="polaroid right-tilt">
+            <img src="image/S__24076340_0.jpg">
+        </div>
+    </div>
+
+    <!-- PAGE 16 -->
+    <div class="page">
+        <h1>For Cake🧁💖</h1>
+
+        <div class="content-box">
+            ร้านอะไรก็ไม่รู้55555🤨🍳<br>
+            แช้มบอกเค้กว่าอยากลองร้านข้าวใหม่ๆ เค้กก้ยอมมาด้วยนะ5555<br><br>
+            ร้านห้องกระจกอะไรก็ไม่รู้มองจากข้างนอกนึกว่าร้านเกม
+            แต่อร่อยหน่าาาแช้มชอบนะร้านนี้ทำกับข้าวรสมือเหมือนแม่แช้มเลยย เค้กก้อุส่าห์ยอมมาด้วย ถ้าไม่อร่อยนี่น่าจะเฟลนะ
+            แต่โชคดีที่แซ่บหลาย😋💝<br>
+        </div>
+
+        <div class="center-polaroid">
+            <img src="image/S__24076341_0.jpg">
+        </div>
+    </div>
+
+    <!-- PAGE 17 -->
+    <div class="page">
+        <h1>For Cake🧁💖</h1>
+
+        <div class="content-box">
+            แช้มอยากกินบิงซู เค้กก้มาด้วยย!!🍨<br><br>
+            จำไม่ได้ละว่าอารมณ์ไหนอยากกินบิงซูวันนั้น แต่ชวนเค้กมาเค้กก็มา
+            จำได้แค่ว่าหว๊านนนนหวานนนแต่แซ่บยุนะแต่อ้วนด้วยยย แต่น่าจะอ้วนไม่เท่าคนที่แช้มนั่งกินด้วย<br><br>
+            แถมน่าจะหวานไม่เท่าที่ไอเลิฟยูด้วยยย อิอิ😘💓
+        </div>
+
+        <div class="center-polaroid">
+            <img src="image/S__24076342_0.jpg">
+        </div>
+    </div>
+
+    <!-- PAGE 18 -->
+    <div class="page">
+        <h1>For Cake🧁💖</h1>
+
+        <div class="content-box">
+            หมูอ้วนอยากกินปิ่งย่าง<br>
+            แล้วก็เป็นเหมือนที่แช้มบอกตลอด "ไม่มีอะไรที่แช้มหาให้ไม่ได้"<br>
+            ก็เลยพาหมูเค้กมากินปิ้งย่าง ไกลลลมากกกแต่แซ่บ อร่อยนะแช้มว่า หมูอ้วนก็สั่งมาเต็มโต๊ะเลออออ
+            เป้นอะไรที่ฟินสุดๆไว้มีโอกาสเด่วไปกันอีกนะ🐽💗
+        </div>
+
+        <div class="center-polaroid">
+            <img src="image/S__24076352_0.jpg">
+        </div>
+    </div>
+
+    <!-- PAGE 19 -->
+    <div class="page">
+        <h1>For Cake🧁💖</h1>
+
+        <div class="content-box">
+            ขากลับให้โชว์แว้นไปที!!🏍<br>
+            หัวใจแทบวายยยย ใจหายหมด แต่เหมือนจะหายไปอยู่กับเทออ👈🏻💕<br>
+        </div>
+
+        <div class="center-polaroid">
+            <img src="image/S__24076353_0.jpg">
+        </div>
+    </div>
+
+    <!-- PAGE 20 -->
+    <div class="page">
+
+        <!-- รูป 4 มุม -->
+        <div class="memory-frame corner-frame top-left-frame">
+            <img src="image/S__24084483_0.jpg">
+        </div>
+
+        <div class="memory-frame corner-frame top-right-frame">
+            <img src="image/S__24084484_0.jpg">
+        </div>
+
+        <div class="memory-frame corner-frame bottom-left-frame">
+            <img src="image/S__24084485_0.jpg">
+        </div>
+
+        <div class="memory-frame corner-frame bottom-right-frame">
+            <img src="image/S__24076355_0.jpg">
+        </div>
+
+        <!-- ข้อความกลาง -->
+        <div class="center-message">
+            <h2>รูปคู่อีกชุด น่าร้ากกก!!</h2>
+            <p>อันนี้น่ารักม้ากกก แช้มชอบสุดๆๆ</p>
+            <p>วันแรกจะไปร้านปิด5555 ทางก็ไกล๊ไกลลลล แต่ดีที่วันที่2สมใจแต่ก็เกือบปิด5555 สนุกมากวันนั้นมีความสุขสุดๆเยย หัวเราะจนฟันแทบกระเด็นออกมา ไว้ถ้าว่างๆอยากไปเด่วไปกันอีกนะ💗🤟🏻</p>
+        </div>
+        <br>
+    </div>
+
+    <!-- PAGE 21 -->
+    <div class="page">
+
+        <!-- รูป 4 มุม -->
+        <div class="memory-frame corner-frame top-left-frame">
+            <img src="image/S__24076357_0.jpg">
+        </div>
+
+        <div class="memory-frame corner-frame top-right-frame">
+            <img src="image/S__24076359_0.jpg">
+        </div>
+
+        <div class="memory-frame corner-frame bottom-left-frame">
+            <img src="image/S__24076367_0.jpg">
+        </div>
+
+        <div class="memory-frame corner-frame bottom-right-frame">
+            <img src="image/S__24076370_0.jpg">
+        </div>
+
+        <!-- ข้อความกลาง -->
+        <div class="center-message">
+            <h2>เอาไปอีก!!</h2>
+            <p>มันน่ารักจนเกินจะเก็บไว้ดูคนเดวววงะ</p>
+            <p>น่ารักทุกรูปเยยยย ถึงหน้าจะนิ่งแต่ในใจยิ้มแก้มถึงหูแล้ววว!!💞</p>
+        </div>
+        <br>
+    </div>
+
+    <!-- PAGE 21 -->
+    <div class="page">
+
+        <!-- รูป 4 มุม -->
+        <div class="memory-frame corner-frame top-left-frame">
+            <img src="image/S__24076360_0.jpg">
+        </div>
+
+        <div class="memory-frame corner-frame top-right-frame">
+            <img src="image/S__24076362_0.jpg">
+        </div>
+
+        <div class="memory-frame corner-frame bottom-left-frame">
+            <img src="image/S__24076363_0.jpg">
+        </div>
+
+        <div class="memory-frame corner-frame bottom-right-frame">
+            <img src="image/S__24076364_0.jpg">
+        </div>
+
+        <!-- ข้อความกลาง -->
+        <div class="center-message">
+            <h2>ยังไม่หมด!!</h2>
+            <p>Mr. Photographerของโผมมม</p>
+            <p>น่ารักๆๆๆ ถ้าชอบก็เซฟเอาได้เลยน้าาา💘</p>
+        </div>
+        <br>
+    </div>
+
+    <!-- PAGE 8 -->
+    <div class="page">
+        <h1>สุดท้ายแน้วววว💕</h1>
+
+        <div class="content-box">
+            ตลอดระยะเวลาที่รู้จักกับเค้กมาแช้มสนุกมากและมีความสุขมากๆ ไม่รู้เค้กจะคิดเหมือนกันป่าวนะ5555 อยากให้เก้บเอาไว้เป้นโมเม้นน่ารักๆน้าาาไม่ต้องคิดอะไรมาก ยินดีกับทุกอย่างที่เคยให้เค้กและที่เคยได้รับจากเค้กนะ หวังว่าแช้มจะเป้นเรื่องดีๆสักเสี้ยวนึงของเค้กก้ยังดี เก้บเรื่องราวดีๆไว้น้าาาถึงคนจะเปลี่ยนไปขนาดไหนรูปถ่ายก็ไม่เคยเปลี่ยนไป แต่แช้มกก็เป็นคนเดิมตลอดนั่นแหละไม่เปลี่ยนไปไหนหรอก เป็นคนเดียวกันที่เค้กรู้จัก คนเดียวกับในรูปนั่นแหละ💕
+        </div>
+
+        <div class="center-polaroid">
+            <img src="image/S__24076373_0.jpg">
+        </div>
+    </div>
+
+
+    <!-- ===== ปุ่มนำทางทุกหน้า ===== -->
+    <div class="nav-buttons" id="navButtons">
+
+        <button class="btn" id="prevBtn" onclick="prevPage()">
+            ⬅ ย้อนกลับ
+        </button>
+
+        <button class="btn" id="nextBtn" onclick="nextPage()">
+            กดดูต่อ 💌 ➡
+        </button>
+
+    </div>
+
+
+    <audio id="music" loop>
+        <source src="song/นายหญิง.mp3" type="audio/mpeg">
+    </audio>
+
+
+    <script>
+
+        // ===== ระบบเปลี่ยนหน้า =====
+
+        let currentPage = 0;
+        let isUnlocked = true;
+
+        const pages = document.querySelectorAll(".page");
+
+        const navButtons = document.getElementById("navButtons");
+        const prevBtn = document.getElementById("prevBtn");
+        const nextBtn = document.getElementById("nextBtn");
+
+
+        // อัปเดตปุ่มนำทาง
+        function updateNavigation() {
+
+            if (!isUnlocked) {
+                navButtons.style.display = "none";
+                return;
+            }
+
+            // แสดงปุ่มหลังใส่รหัสถูก
+            navButtons.style.display = "flex";
+
+            // หน้าแรกซ่อนปุ่มย้อนกลับ
+            prevBtn.style.visibility =
+                currentPage === 0 ? "hidden" : "visible";
+
+            // หน้าสุดท้ายซ่อนปุ่มถัดไป
+            nextBtn.style.visibility =
+                currentPage === pages.length - 1 ? "hidden" : "visible";
+        }
+
+
+        // ===== ไปหน้าถัดไป =====
+
+        function nextPage() {
+
+            if (!isUnlocked) return;
+
+            if (currentPage < pages.length - 1) {
+
+                pages[currentPage].classList.remove("active");
+
+                currentPage++;
+
+                pages[currentPage].classList.add("active");
+
+                updateNavigation();
+            }
+        }
+
+
+        // ===== ย้อนกลับ =====
+
+        function prevPage() {
+
+            if (!isUnlocked) return;
+
+            if (currentPage > 0) {
+
+                pages[currentPage].classList.remove("active");
+
+                currentPage--;
+
+                pages[currentPage].classList.add("active");
+
+                updateNavigation();
+            }
+        }
+
+
+        /* ===== หัวใจลอย ===== */
+
+        setInterval(() => {
+
+            let heart = document.createElement("div");
+
+            heart.className = "heart";
+
+            const hearts = ["❤️", "💖", "💘", "💕", "💗", "💓", "💝"];
+
+            heart.innerHTML = hearts[
+                Math.floor(Math.random() * hearts.length)
+            ];
+
+            heart.style.left = Math.random() * 100 + "vw";
+
+            heart.style.fontSize = (12 + Math.random() * 18) + "px";
+
+            heart.style.animationDuration = (5 + Math.random() * 4) + "s";
+
+            let rotateDirection = Math.random() > 0.5 ? 360 : -360;
+
+            heart.style.setProperty("--rotate", rotateDirection + "deg");
+
+            document.body.appendChild(heart);
+
+            setTimeout(() => heart.remove(), 7000);
+
+        }, 250);
+
+
+        // ===== ระบบตรวจสอบรหัสผ่าน =====
+
+        function checkPassword() {
+
+            const input = document
+                .getElementById("passwordInput")
+                .value
+                .toLowerCase()
+                .trim();
+
+            const correctAnswers = ["13/08/2026"];
+
+            const confirmBtn = document.getElementById("confirmBtn");
+
+
+            if (correctAnswers.includes(input)) {
+
+                // Popup เมื่อตอบถูก
+                alert("เก่งม้ากก!! 💕");
+
+                // ปลดล็อกระบบเปลี่ยนหน้า
+                isUnlocked = true;
+
+                // ซ่อนปุ่มยืนยัน
+                confirmBtn.style.display = "none";
+
+                // แสดงปุ่มนำทาง
+                updateNavigation();
+
+            } else {
+
+                // Popup เมื่อตอบผิด
+                alert("ลองใหม่นะคนเก่ง!!💗");
+
+            }
+        }
+
+
+        /* ===== กด Enter บนมือถือได้ ===== */
+
+        document.getElementById("passwordInput")
+            .addEventListener("keydown", function (e) {
+
+                if (e.key === "Enter") {
+
+                    e.preventDefault();
+
+                    checkPassword();
+
+                }
+
+            });
+
+
+        /* ===== เล่นเพลงเมื่อแตะหน้าจอ ===== */
+
+        const music = document.getElementById("music");
+
+        function startMusicOnce() {
+
+            music.volume = 0.4;
+
+            music.play().catch(() => { });
+
+            document.removeEventListener("touchstart", startMusicOnce);
+
+            document.removeEventListener("click", startMusicOnce);
+
+        }
+
+        document.addEventListener("touchstart", startMusicOnce, { once: true });
+
+        document.addEventListener("click", startMusicOnce, { once: true });
+
+    </script>
+
+</body>
+
+</html>
